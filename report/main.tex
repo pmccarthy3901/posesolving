@@ -7,6 +7,8 @@
 \usepackage{float}
 \usepackage{subcaption}
 \usepackage{braket}
+\usepackage{makecell}
+\usepackage{multirow}
 \usepackage{calligra}
 \usepackage{listings}
 \usepackage{hyperref}
@@ -66,7 +68,7 @@
 \begin{titlepage} \vspace{1cm}
 
 \begin{center}
-\textbf{\Huge Title}
+\textbf{\Huge Pose Solving Algorithms for Electromagnetic Tracking}
 \end{center}
 
 \vspace{1.0cm}
@@ -79,8 +81,8 @@
 \vspace{1.0cm}
 
 \begin{center}
-\textbf{\Large Author:} \Large{Name} {\LARGE\par}
-\textbf{\Large Supervisor:} \Large{Name} {\LARGE\par}
+\textbf{\Large Author:} \Large{Patrick McCarthy} {\LARGE\par}
+\textbf{\Large Supervisor:} \Large{Dr. Andreas Amann} {\LARGE\par}
 \end{center}
 \vspace{1.0cm}
 
@@ -115,13 +117,21 @@ by the author has been clearly cited. \\
 
 I would like to thank...
 
+Andreas 
+Alex 
+Finbarr 
+Martin 
+
 \chapter*{Abstract}
 
-A brief overview of the thesis...
+Electromagnetic tracking systems recover sensor pose by solving a nonlinear inverse problem. This report simluates one such Electromagnetic tracking system and characterises three solvers. The standard solver is Levenberg-Marquardt, which is precise but struggles with initialisation on cold start. Neural Networks are less precise but don't have the initialisation issue. This report builds a hybrid solver which uses a Neural Network to initialise a Levenberg-Marquardt solver, allowing for better precision than Neural Networks alone, and better reliability than Levenberg-Marqurdt alone. On 20,000 held-out poses the hybrid raises the convergence rate from $0.86$ to $0.95$ and reduces the 95th percentile positional error from $64.2$mm to $1.67$mm while running $2.8$ times faster than a cold-start Levenberg-Marquardt solver. 
 
 \tableofcontents{}
 
 \listoffigures{}
+\listoftables{}
+\newpage 
+\input{intro}
 
 \newpage
 \input{background}
@@ -129,9 +139,11 @@ A brief overview of the thesis...
 \newpage
 \input{methods}
 
-
 \newpage
 \input{results}
+
+\newpage 
+\input{conclusion}
 
 \newpage 
 \input{appendix}

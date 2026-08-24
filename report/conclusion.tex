@@ -1,0 +1,12 @@
+\chapter{Conclusion}\label{chap:conclusion}
+
+
+\section{Limitations and Future Work}
+
+\paragraph{Noise.} All results are noiseless. Real EMT systems experience two types of noise. Random noise, and systematic noise. Random noise comes from the sensitivity of the sensors and compounding errors in the data pipeline. Systematic noise which comes from nearby conductive or ferromagnetic objects. These two forms of noise together are the dominant error source in real EMT deployments. 
+
+\paragraph{Simulation.} All results are purely simulated. This report validates the solver against the forward model, not the model against reality. Next steps should include validating the Hybrid solver against physical data. 
+
+\paragraph{Neural Network Architecture.} A single, basic neural network architecture was used. There was no capacity study. Future work could include testing more complex models, seeing how much training data is needed, and varying model capacity to tune for accuracy and computation time in inference.
+
+\paragraph{Jacobian Calculation.} This report uses a finite-difference Jacobian. However, if the forward map were reimplemented in PyTorch, we could have used autograd to obtain an analytic Jacobian. 

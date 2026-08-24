@@ -1,4 +1,4 @@
-\chapter{Theoretical Background}
+\chapter{Theoretical Background}\label{chap:background}
 The Anser electromagnetic tracking (EMT) system infers the position and orientation (pose) of a small sensor coil from eight measurements induced by a planar array of emitter coils. This is an inverse problem: the physics maps from pose to measurement, but the system must run this map backwards, recovering five pose coordinates from eight measured values. 
 
 This chapter builds the machinery needed to both understand and solve the problem. We first describe the physical system, then derive the forward map from the underlying physics. We then ask when this map can be inverted, at least locally, and turn to methods that can do this in practice.
@@ -365,8 +365,12 @@ One downfall of Levenberg's approach is that $\lambda$ is the same in every dime
 This means that the algorithm works with different damping in each direction, proportional to the "scale" of that particular direction.
 
 \subsection{Convergence and the Role of Initialisation}
-Both Gauss-Newton and Levenberg-Marquardt are local methods: they converge to a stationary point of $C$, and which stationary point depends on where they start. Since $C$ is typically non-convex it can have multiple local minima. In our problem, in particular, given the high levels of symmetry between the coils, it is highly likely that there are multiple minima. These iterative methods work when the initial guess is in the correct basin of attraction. That then raises the question, how do we get into the right basin of attraction?
-\missingfig{figure of local minima}
+Both Gauss-Newton and Levenberg-Marquardt are local methods: they converge to a stationary point of $C$, and which stationary point depends on where they start. Since $C$ is typically non-convex it can have multiple local minima, an example is shown in Figure \ref{fig:local_minima}. In our problem, in particular, given the high levels of symmetry between the coils, it is highly likely that there are multiple minima. These iterative methods work when the initial guess is in the correct basin of attraction. That then raises the question, how do we get into the right basin of attraction?
+\begin{figure}
+  \includegraphics[width=0.8\textwidth]{figs/local_minima.png}
+  \caption{Example showing multiple local minima using $y = x\cos x$, $x \in (-3,10)$}
+  \label{fig:local_minima}
+\end{figure}
 \section{Neural Networks for learning inverses}
 The iterative methods above invert the forward map each time for every measurement. An alternative would be to spend the computation time upfront and approximate a full inverse map once.
 
@@ -384,9 +388,5 @@ We represent this approximation as $\hat{f}_w: \mathbb{R}^M \rightarrow \mathbb{
 The question then becomes how do we find the collection of parameters, $w$, which does this?
 
 \subsection{Training a FFNN}
-Because we possess $F$ we can generate unlimited training data, a collection of labelled pairs, $(x_i,y_i)$. The goal of training is then to minimise the \emph{loss function} with respect to the parameters, $w$:
-\begin{definition}[Loss Function]
-  \label{def:loss}
-  $$\hat{L}(w) = \frac{1}{N} \sum_{i = 1}^N \left \Vert \hat{f}_w(x_i) - y_i \right \Vert ^2$$
-\end{definition}
+Because we possess $F$ we can generate unlimited training data, a collection of labelled pairs, $(x_i,y_i)$. The goal of training is then to minimise the \emph{loss function} with respect to the parameters, $w$. The loss function is a a performance metric for the network, and we will see in Section \ref{sec:res-network} that the choice of loss function is crucial to make a network perform well.
 We minimise the loss using an optimiser, in our case the Adam optimiser \cite{kingma2017}. Generalisation is then assessed on a held-out test set never seen during training.
