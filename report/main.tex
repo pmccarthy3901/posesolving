@@ -12,7 +12,6 @@
 \usepackage{calligra}
 \usepackage{listings}
 \usepackage{hyperref}
-\usepackage{graphicx} % Required for inserting images
 \usepackage{amssymb}
 \usepackage{amsmath}
 \usepackage{xcolor}
@@ -53,14 +52,7 @@
   frame=single,
   rulecolor=\color{codegray},
 }
-\newcommand{\missingfig}[1]{%
-  \begin{figure}
-    \centering
-    \fbox{\parbox[c][3cm][c]{0.6\linewidth}{\centering
-      \textbf{\color{red}[MISSING FIGURE]}\\[4pt] #1}}
-    \caption{#1}
-  \end{figure}%
-}
+
 
 \newtheorem{definition}{Definition}[section]
 
@@ -111,20 +103,19 @@ by the author has been clearly cited. \\
 
 \medskip{}
 
-\textbf{Signature:} 
+\textbf{Signature:}  Patrick McCarthy
 
 \chapter*{Acknowledgements}
 
-I would like to thank...
+I would like to thank my supervisor, Andreas Amann, for his guidance and feedback throughout the project, and for his patience in helping me shape both the direction of the work and how it is presented. 
 
-Andreas 
-Alex 
-Finbarr 
-Martin 
+I am grateful to Alex Jaeger for his generosity with his time, expertise, and access to hardware throughout this project. 
+
+Finally, I would like to thank my family fo rtheir continued support and encouragement, without which this thesis would not have been possible
 
 \chapter*{Abstract}
 
-Electromagnetic tracking systems recover sensor pose by solving a nonlinear inverse problem. This report simluates one such Electromagnetic tracking system and characterises three solvers. The standard solver is Levenberg-Marquardt, which is precise but struggles with initialisation on cold start. Neural Networks are less precise but don't have the initialisation issue. This report builds a hybrid solver which uses a Neural Network to initialise a Levenberg-Marquardt solver, allowing for better precision than Neural Networks alone, and better reliability than Levenberg-Marqurdt alone. On 20,000 held-out poses the hybrid raises the convergence rate from $0.86$ to $0.95$ and reduces the 95th percentile positional error from $64.2$mm to $1.67$mm while running $2.8$ times faster than a cold-start Levenberg-Marquardt solver. 
+Electromagnetic tracking systems recover sensor pose by solving a nonlinear inverse problem. This report simulates one such Electromagnetic tracking system and characterises three solvers. The standard solver is Levenberg-Marquardt, which is precise but struggles with initialisation on cold start. Neural Networks are less precise but do not have the initialisation issue. This report builds a hybrid solver which uses a neural network to initialise a Levenberg-Marquardt solver, allowing for better precision than neural networks alone, and better reliability than Levenberg-Marquardt alone. On a held-out test set the hybrid solver raises the convergence rate from $0.86$ to $0.95$ and reduces the 95th percentile positional error from $64.2$mm to $1.67$mm while running $2.8$ times faster than a cold-start Levenberg-Marquardt solver. 
 
 \tableofcontents{}
 
@@ -145,12 +136,15 @@ Electromagnetic tracking systems recover sensor pose by solving a nonlinear inve
 \newpage 
 \input{conclusion}
 
-\newpage 
-\input{appendix}
-
 \newpage
 \bibliographystyle{unsrt}
 \bibliography{references}
+
+\newpage 
+\appendix
+\input{appendix}
+
+
 
 
 \end{document}

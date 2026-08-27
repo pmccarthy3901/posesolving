@@ -1,16 +1,26 @@
 \chapter{Theoretical Background}\label{chap:background}
-The Anser electromagnetic tracking (EMT) system infers the position and orientation (pose) of a small sensor coil from eight measurements induced by a planar array of emitter coils. This is an inverse problem: the physics maps from pose to measurement, but the system must run this map backwards, recovering five pose coordinates from eight measured values. 
+
+How do we locate the pose of an object in space? One way is using Electromagnetic Tracking (EMT). A magnetic field varies with position in a known way, so a sensor that measures the field carries information about where it is. The signal the sensor measures depends additionally on its orientation relative to the field, so the measurement carries information about orientation too. Current carrying coils create such a field, so a sensor in their presence can measure this generated field and locate itself.
+
+Physics tells us how we can map from pose to measurements, a map we call the \emph{forward map}, but we want to do the opposite. We want to recover the pose given the measurements. Therefore, this is an inverse problem.
+
+The Anser EMT system \cite{jaeger2017}, the first fully open-source EMT platform, solves exactly this problem. It infers the pose (five coordinates) of a small sensor coil from eight measurements induced by a planar array of emitter coils. 
 
 This chapter builds the machinery needed to both understand and solve the problem. We first describe the physical system, then derive the forward map from the underlying physics. We then ask when this map can be inverted, at least locally, and turn to methods that can do this in practice.
 
-The first class of methods we look at is the iterative methods, whose success depends on where they start. The second class are neural networks (NNs), which learn an approximate inverse directly. The chapter closes by introducing a hybrid approach, which combines the strengths of both.
+The first class of methods we look at is the iterative methods, whose success depends on where they start. The second class is NNs, which learn an approximate inverse directly. We begin with the physical system itself.
 
-\section{The Anser System}
-Anser EMT \cite{jaeger2017} is the first fully open-source electromagnetic tracking (EMT) platform for image-guided interventions. It uses magnetic fields to determine the position and orientation of a sensor embedded in the field. It has two main components: a planar field generator, and a tracking sensor coil. 
+\section{The Anser EMT System}
+The Anser EMT system has two main components: a planar field generator, and a tracking sensor coil. This section describes each in turn.
 
 \subsection{The Field Generator}
-The Anser EMT system uses a planar field generator consisting of 8 coils being driven at different frequencies. Each coil consists of a wound rectangular spiraling filament with specifications shown in Table \ref{tab:coil_spec}.
+The Anser EMT system uses a planar field generator consisting of eight being driven at different frequencies. Each coil consists of a wound rectangular spiralling filament which first spirals inward on the top half of a PCB, goes through a via, and the spirals back outwards on the bottom half of the PCB, as seen in Figure \ref{fig:single_coil}. The two spiral layers together form a single coil. The coil specifications are given in Table \ref{tab:coil_spec}
 
+\begin{figure}
+  \includegraphics[width = 0.8\textwidth]{figs/single_coil.png} 
+  \caption{Layout of a single emitter coil.}
+  \label{fig:single_coil}
+\end{figure}
 \begin{table}
   \centering
   \begin{tabular}{ll}
@@ -52,9 +62,9 @@ Note that throughout we use the convention $\left \vert \mathbf{a} \right \vert 
 
 Now, we use the Biot Savart Law to find the magnetic field in each of the lines. 
 
-\begin{equation}
+\begin{equation*}
   \mathbf{B} = \frac{\mu_0 I}{4\pi} \int \frac{d\mathbf{l}\times \mathbf{r}}{r^3}  
-\end{equation}
+\end{equation*}
 
 To evaluate this integral we first parametrise $\mathbf{r}$ in a parameter $t$, yielding:
 \begin{align*}
@@ -64,77 +74,77 @@ To evaluate this integral we first parametrise $\mathbf{r}$ in a parameter $t$, 
 
 Substituting in gives:
 
-\begin{equation}
+\begin{equation*}
   \mathbf{B} = \frac{\mu_0 I}{4\pi} \int_{0}^{1} \frac{(\mathbf{a}dt)\times (\mathbf{c} - \mathbf{a}t)}{\left \vert \mathbf{c} -  t\mathbf{a}\right\vert^3}
-\end{equation}
+\end{equation*}
 
 Noting that $\mathbf{a} \times \mathbf{a} = 0$, and that $\mathbf{a}$ and $\mathbf{c}$ are constants, this simplifies to:
 
-\begin{equation} 
+\begin{equation*} 
   \mathbf{B} = \frac{\mu_0 I}{4\pi}(\mathbf{a} \times \mathbf{c}) \int_{0}^{1}  \frac{dt}{\left \vert \mathbf{c} -  t\mathbf{a}\right\vert^3}
-\end{equation}
+\end{equation*}
 
 The denominator must now be simplified.
-\begin{equation}
+\begin{equation*}
   \left\vert \mathbf{c} - t\mathbf{a} \right \vert ^3 = \left( c^2 + t^2a^2 - 2t(\mathbf{a}\cdot \mathbf{c}) \right)^{3/2}
-\end{equation}
+\end{equation*}
 
 For simplicity, let $\beta = -(\mathbf{a} \cdot \mathbf{c})$.
 
-\begin{equation}
+\begin{equation*}
   \left\vert \mathbf{c} - t\mathbf{a} \right \vert ^3 =  \left( a^2t^2 + 2\beta t + c^2  \right)^{3/2}
-\end{equation}
+\end{equation*}
 
 Completing the square:
 
-\begin{equation}
+\begin{equation*}
   \left\vert \mathbf{c} - t\mathbf{a} \right \vert ^3 =  a^{3} \left( \left ( t + \frac{\beta}{a^2} \right)^2 -\frac{\beta^2}{a^4} + \frac{c^2}{a^2} \right)^{3/2}
-\end{equation}
+\end{equation*}
 
 Now let $u = t + \frac{\beta}{a^2}$, $du = dt$, $u(0) = \frac{\beta}{a^2}$, $u(1) = 1 + \frac{\beta}{a^2}$. Also, let $\delta = \frac{c^2}{a^2} - \frac{\beta^2}{a^4}$.
 
 Substituting back into our Biot Savart Formula gives:
 
-\begin{equation}
+\begin{equation*}
   \mathbf{B} = \frac{\mu_0 I}{4\pi} \frac{\mathbf{a} \times \mathbf{c}}{a^3} \int_{\frac{\beta}{a^2}}^{1+\frac{\beta}{a^2}} \frac{du}{\left(u^2 + \delta\right)^{3/2}}
-\end{equation}
+\end{equation*}
 
 We want to use the identity $\sec^2\psi = 1 + \tan^2\psi$, to do so, factor out $\delta^{3/2}$
 
-\begin{equation}
+\begin{equation*}
   \mathbf{B} = \frac{\mu_0 I}{4\pi} \frac{\mathbf{a} \times \mathbf{c}}{a^3\delta^{3/2}} \int_{\frac{\beta}{a^2}}^{1+\frac{\beta}{a^2}} \frac{du}{\left(\frac{u^2}{\delta} + 1 \right)^{3/2}}
-\end{equation}
+\end{equation*}
 
-Now that it's in the correct form let: $\tan^2\psi = \frac{u^2}{\delta}$, then: 
+Now that it is in the correct form let: $\tan^2\psi = \frac{u^2}{\delta}$, then: 
 \begin{align*}
   \tan\psi &= \frac{u}{\sqrt{\delta}} \\
   \sec^2\psi \, d\psi &= \frac{1}{\sqrt{\delta}} du \\
   \psi\left(\frac{\beta}{a^2}\right) &= \arctan \left( \frac{\beta}{a^2\sqrt{\delta}} \right) \\
-  \phi\left( 1 + \frac{\beta}{a^2} \right) &= \arctan \left( \frac{1+\frac{\beta}{a^2}}{\sqrt{\delta}} \right)
+  \psi\left( 1 + \frac{\beta}{a^2} \right) &= \arctan \left( \frac{1+\frac{\beta}{a^2}}{\sqrt{\delta}} \right)
 \end{align*}
 
 Substituting back in:
-\begin{equation}
+\begin{equation*}
   \mathbf{B} = \frac{\mu_0 I}{4\pi} \frac{\mathbf{a} \times \mathbf{c}}{a^3\delta^{3/2}} \int_{\arctan\left (\frac{\beta}{a^2\sqrt{\delta}}\right)}^{\arctan\left(\frac{1}{\sqrt{\delta}}\left(1+\frac{\beta}{a^2}\right)\right)} \frac{\sqrt{\delta} \sec^2 \psi \, d\psi}{\left(1 + \tan^2\psi \right)^{3/2}}
-\end{equation}
+\end{equation*}
 
 Using the identities $\sec^2 \psi = 1 + \tan^2 \psi$ and $\cos \psi = \frac{1}{\sec \psi}$ and simplifying yields:
 
-\begin{equation}
+\begin{equation*}
   \mathbf{B} = \frac{\mu_0 I}{4\pi} \frac{\mathbf{a} \times \mathbf{c}}{a^3\delta} \int_{\arctan\left (\frac{\beta}{a^2\sqrt{\delta}}\right)}^{\arctan\left(\frac{1}{\sqrt{\delta}}\left(1+\frac{\beta}{a^2}\right)\right)} \cos\psi \, d\psi
-\end{equation}
+\end{equation*}
 
 Solving:
 
-\begin{equation}
+\begin{equation*}
   \mathbf{B} = \frac{\mu_0 I}{4\pi} \frac{\mathbf{a} \times \mathbf{c}}{a^3\delta} \left ( \sin\left( \arctan\left(\frac{1}{\sqrt{\delta}}\left(1+\frac{\beta}{a^2}\right)\right)\right) - \sin \left( \arctan\left (\frac{\beta}{a^2\sqrt{\delta}}\right) \right) \right )
-\end{equation}
+\end{equation*}
 
 Now, we must consider a right angled triangle to work this out. $\sin\psi = \frac{o}{h}$, $\tan\psi = \frac{o}{a}$ therefore $\sin\left( \arctan \left( \frac{o}{a} \right) \right) = \frac{o}{\sqrt{o^2 + a^2}}$ by Pythagoras' Theorem.
 
-\begin{equation}
+\begin{equation*}
   \mathbf{B} = \frac{\mu_0 I}{4\pi} \frac{\mathbf{a} \times \mathbf{c}}{a^3\delta} \left( \left( \frac{1 + \frac{\beta}{a^2}}{\sqrt{\delta + \left( 1 + \frac{\beta}{a^2} \right)^2}} \right) - \left( \frac{\beta}{\sqrt{\beta^2 + a^4 \delta}} \right)  \right) 
-\end{equation}
+\end{equation*}
 
 Recalling $\delta = \frac{c^2}{a^2} - \frac{\beta^2}{a^4}$, $\beta = -\mathbf{a} \cdot \mathbf{c}$, and looking at each of the denominators:
 \begin{align*}
@@ -153,15 +163,15 @@ Recalling $\delta = \frac{c^2}{a^2} - \frac{\beta^2}{a^4}$, $\beta = -\mathbf{a}
 
 Substituting into our formula for $\mathbf{B}$ now gives:
 
-\begin{equation}
+\begin{equation*}
   \mathbf{B} = \frac{\mu_0 I}{4\pi} \frac{\mathbf{a}\times \mathbf{c}}{ac^2 - \frac{\left(\mathbf{a} \cdot \mathbf{c}\right)^2}{a}} \left( \frac{1 - \frac{\mathbf{a}\cdot{\mathbf{c}}}{a^2}}{\frac{b}{a}} + \frac{\mathbf{a} \cdot \mathbf{c}}{ac} \right)
-\end{equation}
+\end{equation*}
 
-Multiplying the numerator and denominator across by $\mathbf{a}$
+Multiplying the numerator and denominator across by $a$
 
-\begin{equation}
+\begin{equation*}
 \mathbf{B} = \frac{\mu_0 I}{4\pi} \frac{\mathbf{a}\times \mathbf{c}}{a^2c^2 - \left(\mathbf{a} \cdot \mathbf{c}\right)^2} \left( \frac{a^2 - \mathbf{a}\cdot\mathbf{c}}{b} + \frac{\mathbf{a} \cdot \mathbf{c}}{c} \right)
-\end{equation}
+\end{equation*}
 
 Now, picking out these two parts and simplifying, where $\alpha$ is the angle between $\mathbf{a}$ and $\mathbf{c}$:
 \begin{align*}
@@ -182,9 +192,9 @@ This gives us our final form:
 \end{equation}
 Now, remembering that this equation is linear and that each coil is made up of straight line filaments we get:
 
-\begin{equation}
+\begin{equation*}
 \mathbf{B}_{\text{total}} = \sum_{\text{coils}} \sum_{\text{filaments}}  \mathbf{B}_{\text{filament}} 
-\end{equation}
+\end{equation*}
 Now, since we are in free space we use the identity $\mathbf{H} = \frac{\mathbf{B}}{\mu_0}$ \cite[p.~285]{griffiths2013}
 
 \section{Understanding the forward map}\label{sec:forward-map}
@@ -203,7 +213,7 @@ In practice, $\mathbf{p}$ is restricted to a set $\Omega \subset \mathbb{R}^5$
 \begin{equation}
   \Omega = \left\{
   \begin{bmatrix} x \\ y \\ z \\ \theta \\ \phi \end{bmatrix} \in \mathbb{R}^5 : 
-  \begin{matrix} x \in (-0.125\text{ m},0.125\text{ m}) \\ y \in (-0.125\text{ m},0.125\text{ m}) \\ z \in (0.001 \text{ m},0.25\text{ m}) \\ \theta \in (0\text{ rad},\pi\text{ rad}) \\ \phi \in [0\text{ rad},2\pi\text{ rad}) \end{matrix}
+  \begin{matrix} x \in (-0.125\text{ m},0.125\text{ m}) \\ y \in (-0.125\text{ m},0.125\text{ m}) \\ z \in (0.0016 \text{ m},0.25\text{ m}) \\ \theta \in (0\text{ rad},\pi\text{ rad}) \\ \phi \in [0\text{ rad},2\pi\text{ rad}) \end{matrix}
   \right\}
 \end{equation}
 
@@ -235,7 +245,7 @@ Now that we have established that $F$ is not surjective we must move our attenti
 \begin{equation}
   F(\mathbf{p} + \mathbf{\delta}) = F(\mathbf{p}) + J(\mathbf{p})\mathbf{\delta}
 \end{equation}
-where $\mathbf{delta}$ is a small step in $\mathbb{R}^5$, and $J$ is the \emph{Jacobian}, defined by:
+where $\boldsymbol{delta}$ is a small step in $\mathbb{R}^5$, and $J$ is the \emph{Jacobian}, defined by:
 Jacobian:
 \begin{definition}[Jacobian]
   $$ J(\mathbf{p}) = \frac{\partial F}{\partial \mathbf{p}} \in \mathbb{R}^{8\times5} \text{, } J_{i,j} = \frac{\partial F_i}{\partial p_j} $$
@@ -272,10 +282,10 @@ the measurement, even locally. Full column rank is a condition for the inverse
 problem to be well posed.
 
 \section{Iterative Methods}
-Given a function $f : \mathbb{R}^N \rightarrow \mathbb{R}^M$ with $M \geq N$, and a given $y \in \mathbb{R}^M$ suppose we want to find an $x \in \mathbb{R}^N$ that satisfies $y = f(x)$. In the case $m = n$ we could get bijectivity which would allow us to simply invert the map, however, in our case we have $n = 5$ and $m = 8$ so we cannot. This leads us to iterative methods.
+Given a function $f : \mathbb{R}^n \rightarrow \mathbb{R}^m$ with $m \geq n$, and a given $y \in \mathbb{R}^m$ suppose we want to find an $x \in \mathbb{R}^n$ that satisfies $y = f(x)$. In the case $m = n$ we could get bijectivity which would allow us to simply invert the map, however, in our case we have $n = 5$ and $m = 8$ so we cannot. This leads us to iterative methods.
 
 \subsection{Gauss-Newton}\label{sec:GN}
-The Gauss-Newton Algorithm \cite{nocedal2006} solves this exact kind of problem. 
+The Gauss-Newton (GN) Algorithm \cite{nocedal2006} solves this exact kind of problem. 
 
 We have a function $f : \mathbb{R}^n \rightarrow \mathbb{R}^m$ and we know $y \in \mathbb{R}^m$, we want to find $x_{\text{true}} \in \mathbb{R}^n$ such that $y = f(x_{\text{true}})$. We start with an initial guess $x_0 \in \mathbb{R}^n$ and define a residual:
 \begin{equation}
@@ -286,7 +296,7 @@ Then we define a cost function:
   C(x) = \frac{1}{2} \left \Vert r(x) \right \Vert^2 = \frac{1}{2} r(x)^{\top}r(x)
   \label{eq:cost_function}
 \end{equation}
-Suppose now we take a step, $\delta \in \mathbb{R}^N$, we want to find the $\delta$ which minimises the cost function.
+Suppose now we take a step, $\delta \in \mathbb{R}^n$, we want to find the $\delta$ which minimises the cost function.
 \begin{equation}
   C(x + \delta) = \frac{1}{2} \left\Vert r(x + \delta) \right\Vert^2 
 \end{equation}
@@ -365,7 +375,7 @@ One downfall of Levenberg's approach is that $\lambda$ is the same in every dime
 This means that the algorithm works with different damping in each direction, proportional to the "scale" of that particular direction.
 
 \subsection{Convergence and the Role of Initialisation}
-Both Gauss-Newton and Levenberg-Marquardt are local methods: they converge to a stationary point of $C$, and which stationary point depends on where they start. Since $C$ is typically non-convex it can have multiple local minima, an example is shown in Figure \ref{fig:local_minima}. In our problem, in particular, given the high levels of symmetry between the coils, it is highly likely that there are multiple minima. These iterative methods work when the initial guess is in the correct basin of attraction. That then raises the question, how do we get into the right basin of attraction?
+Both Gauss-Newton and LM are local methods: they converge to a stationary point of $C$, and which stationary point depends on where they start. Since $C$ is typically non-convex it can have multiple local minima, an example is shown in Figure \ref{fig:local_minima}. In our problem, in particular, given the high levels of symmetry between the coils, it is highly likely that there are multiple minima. These iterative methods work when the initial guess is in the correct basin of attraction. That then raises the question, how do we get into the right basin of attraction?
 \begin{figure}
   \includegraphics[width=0.8\textwidth]{figs/local_minima.png}
   \caption{Example showing multiple local minima using $y = x\cos x$, $x \in (-3,10)$}
@@ -375,7 +385,7 @@ Both Gauss-Newton and Levenberg-Marquardt are local methods: they converge to a 
 The iterative methods above invert the forward map each time for every measurement. An alternative would be to spend the computation time upfront and approximate a full inverse map once.
 
 \subsection{Feed Forward Neural Network}
-We use a fully-connected feed forward neural network (FFNN) to approximate the inverse. Suppose we have a function $\Phi: \mathbb{R}^N \rightarrow \mathbb{R}^M$ an approximate inverse is defined on the image of $\Phi$, which we call $f$. We would like to find $y \in \mathbb{R}^N$ such that $y = f(x), x \in \mathbb{R}^M$. To do so, a FFNN with $L$ hidden layers performs the following composition, with $o_0 = x$ and $o_L = \hat{y}$:
+We use a fully-connected feed forward NN to approximate the inverse. Suppose we have a function $\Phi: \mathbb{R}^N \rightarrow \mathbb{R}^M$ an approximate inverse is defined on the image of $\Phi$, which we call $f$. We would like to find $y \in \mathbb{R}^N$ such that $y = f(x), x \in \mathbb{R}^M$. To do so, a FFNN with $L$ hidden layers performs the following composition, with $o_0 = x$ and $o_L = \hat{y}$:
 
 \begin{equation}
   \label{eq:FFNN}
@@ -387,6 +397,6 @@ We represent this approximation as $\hat{f}_w: \mathbb{R}^M \rightarrow \mathbb{
 
 The question then becomes how do we find the collection of parameters, $w$, which does this?
 
-\subsection{Training a FFNN}
-Because we possess $F$ we can generate unlimited training data, a collection of labelled pairs, $(x_i,y_i)$. The goal of training is then to minimise the \emph{loss function} with respect to the parameters, $w$. The loss function is a a performance metric for the network, and we will see in Section \ref{sec:res-network} that the choice of loss function is crucial to make a network perform well.
+\subsection{Training a Neural Network}
+Because we possess $F$ we can generate unlimited training data, a collection of labelled pairs, $(x_i,y_i)$. The goal of training is then to minimise the \emph{loss function} with respect to the parameters, $w$. The loss function is a performance metric for the network, and we will see in Section \ref{sec:res-network} that the choice of loss function is crucial to make a network perform well.
 We minimise the loss using an optimiser, in our case the Adam optimiser \cite{kingma2017}. Generalisation is then assessed on a held-out test set never seen during training.

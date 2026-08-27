@@ -1,12 +1,15 @@
 \chapter{Conclusion}\label{chap:conclusion}
 
+\section{Summary of Findings}
+
+This thesis asked how a LM pose solver can be reliably initialised when no previous pose exists. To answer this question, we reimplemented the Anser forward model in Python, characterised the solver's convergence as a function of initialisation quality, trained a NN to predict pose directly, and combined the two into a hybrid solver. 
+
+The basin sweeps showed that convergence degrades as the initialisation error increases, and that failure is discrete. The LM solver either converges or fails outright. The network alone is reliable but imprecise. Its errors are unimodal and never reach the desired convergence tolerances. The two solvers are therefore complimentary. The hybrid solver derived by combining the two retains the precision of the LM solver, but allows the NN initialisation to provide increased reliability. 
 
 \section{Limitations and Future Work}
 
-\paragraph{Noise.} All results are noiseless. Real EMT systems experience two types of noise. Random noise, and systematic noise. Random noise comes from the sensitivity of the sensors and compounding errors in the data pipeline. Systematic noise which comes from nearby conductive or ferromagnetic objects. These two forms of noise together are the dominant error source in real EMT deployments. 
+The most signigicant limitation is that all results are purely simulated. This thesis validates the solver against the forward model, not the model against reality. Next steps should include validating the Hybrid solver against physical data. As the results are simulated, they contain no noise. Real EMT systems experience two types of noise. Random noise, and systematic noise. Random noise, arising from the sensitivity of the sensors and compounding errors in the data pipeline, and systematic noise which comes from nearby conductive or ferromagnetic objects. These two forms of noise together are the dominant error source in real EMT deployments \cite{sorriento2020}. 
 
-\paragraph{Simulation.} All results are purely simulated. This report validates the solver against the forward model, not the model against reality. Next steps should include validating the Hybrid solver against physical data. 
+A single, basic NN architecture was used. There was no capacity study. Future work could include testing more complex models, seeing how much training data is needed, and varying model capacity to tune for accuracy and computation time in inference.
 
-\paragraph{Neural Network Architecture.} A single, basic neural network architecture was used. There was no capacity study. Future work could include testing more complex models, seeing how much training data is needed, and varying model capacity to tune for accuracy and computation time in inference.
-
-\paragraph{Jacobian Calculation.} This report uses a finite-difference Jacobian. However, if the forward map were reimplemented in PyTorch, we could have used autograd to obtain an analytic Jacobian. 
+This thesis uses a finite-difference Jacobian. However, if the forward map were reimplemented in PyTorch, we could have used autograd to obtain an analytic Jacobian. This would remove the step-size parameter $h$, and its associated truncation error
