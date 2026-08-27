@@ -9,9 +9,11 @@
 \contentsline {table}{\numberline {3.5}{\ignorespaces Network architecture.}}{31}{table.caption.28}%
 \contentsline {table}{\numberline {3.6}{\ignorespaces Training configuration.}}{32}{table.caption.29}%
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {4.1}{\ignorespaces Computer specifications for training and inference}}{34}{table.caption.31}%
-\contentsline {table}{\numberline {4.2}{\ignorespaces Convergence criteria for results reporting.}}{35}{table.caption.32}%
-\contentsline {table}{\numberline {4.3}{\ignorespaces Experimental Design of NN models.}}{38}{table.caption.39}%
-\contentsline {table}{\numberline {4.4}{\ignorespaces Test set performance of NN models.}}{38}{table.caption.40}%
-\contentsline {table}{\numberline {4.5}{\ignorespaces Performance of the three solvers on the held-out test set of 20{,}000 poses.}}{40}{table.caption.46}%
+\contentsline {table}{\numberline {4.1}{\ignorespaces Computer specifications for training and inference}}{36}{table.caption.31}%
+\contentsline {table}{\numberline {4.2}{\ignorespaces Convergence criteria for results reporting.}}{36}{table.caption.32}%
+\contentsline {table}{\numberline {4.3}{\ignorespaces Experimental Design of NN models.}}{39}{table.caption.39}%
+\contentsline {table}{\numberline {4.4}{\ignorespaces Test set performance of NN models.}}{39}{table.caption.40}%
+\contentsline {table}{\numberline {4.5}{\ignorespaces Performance of the three solvers on the held-out test set of 20{,}000 poses.}}{41}{table.caption.46}%
 \addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {A.1}{\ignorespaces Mapping between thesis sections and Python modules.}}{50}{table.caption.53}%

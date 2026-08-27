@@ -14,9 +14,10 @@ The first class of methods we look at is the iterative methods, whose success de
 The Anser EMT system has two main components: a planar field generator, and a tracking sensor coil. This section describes each in turn.
 
 \subsection{The Field Generator}
-The Anser EMT system uses a planar field generator consisting of eight being driven at different frequencies. Each coil consists of a wound rectangular spiralling filament which first spirals inward on the top half of a PCB, goes through a via, and the spirals back outwards on the bottom half of the PCB, as seen in Figure \ref{fig:single_coil}. The two spiral layers together form a single coil. The coil specifications are given in Table \ref{tab:coil_spec}
+The Anser EMT system uses a planar field generator consisting of eight coils being driven at different frequencies. Each coil consists of a wound rectangular spiralling filament which first spirals inward on the top layer of a PCB, goes through a via, and then spirals back outwards on the bottom layer of the PCB, as seen in Figure \ref{fig:single_coil}. The two spiral layers together form a single coil. The coil specifications are given in Table \ref{tab:coil_spec}.
 
 \begin{figure}
+  \centering
   \includegraphics[width = 0.8\textwidth]{figs/single_coil.png} 
   \caption{Layout of a single emitter coil.}
   \label{fig:single_coil}
@@ -377,6 +378,7 @@ This means that the algorithm works with different damping in each direction, pr
 \subsection{Convergence and the Role of Initialisation}
 Both Gauss-Newton and LM are local methods: they converge to a stationary point of $C$, and which stationary point depends on where they start. Since $C$ is typically non-convex it can have multiple local minima, an example is shown in Figure \ref{fig:local_minima}. In our problem, in particular, given the high levels of symmetry between the coils, it is highly likely that there are multiple minima. These iterative methods work when the initial guess is in the correct basin of attraction. That then raises the question, how do we get into the right basin of attraction?
 \begin{figure}
+  \centering
   \includegraphics[width=0.8\textwidth]{figs/local_minima.png}
   \caption{Example showing multiple local minima using $y = x\cos x$, $x \in (-3,10)$}
   \label{fig:local_minima}
@@ -385,15 +387,15 @@ Both Gauss-Newton and LM are local methods: they converge to a stationary point 
 The iterative methods above invert the forward map each time for every measurement. An alternative would be to spend the computation time upfront and approximate a full inverse map once.
 
 \subsection{Feed Forward Neural Network}
-We use a fully-connected feed forward NN to approximate the inverse. Suppose we have a function $\Phi: \mathbb{R}^N \rightarrow \mathbb{R}^M$ an approximate inverse is defined on the image of $\Phi$, which we call $f$. We would like to find $y \in \mathbb{R}^N$ such that $y = f(x), x \in \mathbb{R}^M$. To do so, a FFNN with $L$ hidden layers performs the following composition, with $o_0 = x$ and $o_L = \hat{y}$:
+We use a fully-connected feed forward NN to approximate the inverse. Suppose we have a function $F: \mathbb{R}^N \rightarrow \mathbb{R}^M$ an approximate inverse is defined on the image of $F$, which we call $\hat{F}^{-1}$. We would like to find $y \in \mathbb{R}^N$ such that $y = \hat{F}^{-1}(x), x \in \mathbb{R}^M$. To do so, a feed-forward NN with $L$ hidden layers performs the composition shown in equation \eqref{eq:FFNN}, with $o_0 = x$ and $o_L = \hat{y}$:
 
-\begin{equation}
+\begin{align}
   \label{eq:FFNN}
-  o_{i+1} = \sigma \left(W_io_i + b_i\right)
-\end{equation}
+  o_{i+1} &= \sigma \left(W_io_i + b_i\right) \text{,} i \in \{0,1,2,...l-2\} \\ 
+  o_{L} &= W_{L-1}o_{l+1} + b_{l-1}
+\end{align}
 where $W_i$ and $b_i$ are the weight matrices and bias vectors (collectively the parameters $w$), and $\sigma$ is the nonlinear activation function.
-\\
-We represent this approximation as $\hat{f}_w: \mathbb{R}^M \rightarrow \mathbb{R}^N$, with $\hat{y} = \hat{f}_w(x)$ 
+We represent this approximation as $\hat{F}^{-1}_w: \mathbb{R}^M \rightarrow \mathbb{R}^N$, with $\hat{y} = \hat{F}^{-1}_w(x)$ 
 
 The question then becomes how do we find the collection of parameters, $w$, which does this?
 

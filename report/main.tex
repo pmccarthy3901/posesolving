@@ -111,11 +111,11 @@ I would like to thank my supervisor, Andreas Amann, for his guidance and feedbac
 
 I am grateful to Alex Jaeger for his generosity with his time, expertise, and access to hardware throughout this project. 
 
-Finally, I would like to thank my family fo rtheir continued support and encouragement, without which this thesis would not have been possible
+Finally, I would like to thank my family for their continued support and encouragement, without which this thesis would not have been possible.
 
 \chapter*{Abstract}
 
-Electromagnetic tracking systems recover sensor pose by solving a nonlinear inverse problem. This report simulates one such Electromagnetic tracking system and characterises three solvers. The standard solver is Levenberg-Marquardt, which is precise but struggles with initialisation on cold start. Neural Networks are less precise but do not have the initialisation issue. This report builds a hybrid solver which uses a neural network to initialise a Levenberg-Marquardt solver, allowing for better precision than neural networks alone, and better reliability than Levenberg-Marquardt alone. On a held-out test set the hybrid solver raises the convergence rate from $0.86$ to $0.95$ and reduces the 95th percentile positional error from $64.2$mm to $1.67$mm while running $2.8$ times faster than a cold-start Levenberg-Marquardt solver. 
+Electromagnetic tracking systems recover sensor pose by solving a nonlinear inverse problem. This thesis simulates one such electromagnetic tracking system and characterises three solvers. The standard solver is Levenberg-Marquardt (LM), which is precise but struggles with initialisation on cold start. Neural networks (NNs) are less precise but do not have the initialisation issue. This thesis builds a hybrid solver which uses a neural network to initialise a Levenberg-Marquardt solver, allowing for better precision than neural networks alone, and better reliability than Levenberg-Marquardt alone. On a held-out test set the hybrid solver raises the convergence rate from $0.86$ to $0.95$ and reduces the 95th percentile positional error from $64.2$mm to $1.67$mm while running $2.8$ times faster than a cold-start Levenberg-Marquardt solver. 
 
 \tableofcontents{}
 

@@ -2,7 +2,7 @@
 
 \section{Summary of Findings}
 
-This thesis asked how a LM pose solver can be reliably initialised when no previous pose exists. To answer this question, we reimplemented the Anser forward model in Python, characterised the solver's convergence as a function of initialisation quality, trained a NN to predict pose directly, and combined the two into a hybrid solver. 
+This thesis asked how an LM pose solver can be reliably initialised when no previous pose exists. To answer this question, we reimplemented the Anser forward model in Python, characterised the solver's convergence as a function of initialisation quality, trained an NN to predict pose directly, and combined the two into a hybrid solver. 
 
 The basin sweeps showed that convergence degrades as the initialisation error increases, and that failure is discrete. The LM solver either converges or fails outright. The network alone is reliable but imprecise. Its errors are unimodal and never reach the desired convergence tolerances. The two solvers are therefore complimentary. The hybrid solver derived by combining the two retains the precision of the LM solver, but allows the NN initialisation to provide increased reliability. 
 

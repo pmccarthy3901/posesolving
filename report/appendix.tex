@@ -1,3 +1,27 @@
+\chapter{Code}\label{app:code}
+The implementation is available at \url{https://github.com/pmccarthy3901/posesolving}. 
+Table \ref{tab:code_map} maps the sections of the thesis to the corresponding Python modules.
 
 
-\section{Mapping between python modules and report sections}\label{app:code}
+\begin{table}
+  \centering 
+  \begin{tabular}{lll}
+    \toprule 
+    Section & Module & Contents \\
+    \midrule 
+    \ref{sec:anser_sim} & \lstinline[style=python] |anser/| directory & Anser forward model simulation. \\
+    \ref{sec:dataset} & \lstinline[style=python] |data/build_dataset.py| & Dataset generation. \\
+    \ref{sec:error} & \lstinline[style=python] |models/train.py| & Error metrics. \\
+    \ref{sec:methods-lm} & \lstinline[style=python] |models/LM_solve.py| & LM implementation. \\
+    \ref{sec:network} & \lstinline[style=python]|models/FFNN_network.py| & NN configuration. \\
+    \ref{sec:methods-loss} & \lstinline[style=python] |models/train.py| & Loss function. \\
+    \ref{sec:nn_training} & \lstinline[style=python] |models/train.py| & Network training. \\
+    \ref{sec:hybrid} & \lstinline[style=python] |data/reparametrisation.py| & Reparametrisation. \\
+    \ref{sec:results-lm} & \lstinline[style=python] |demos/basin_sweep.ipynb| & Basin sweep. \\
+    \ref{sec:three_way} & \lstinline[style=python] |demos/solver_demos.ipynb| & Three-way comparison. \\
+    \bottomrule 
+  \end{tabular}
+  \caption{Mapping between thesis sections and Python modules.}
+  \label{tab:code_map}
+\end{table}
+
