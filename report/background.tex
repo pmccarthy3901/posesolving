@@ -9,7 +9,7 @@ The Anser EMT system \cite{jaeger2017}, the first fully open-source EMT platform
 This chapter builds the machinery needed to both understand and solve the problem. We first describe the physical system, then derive the forward map from the underlying physics. We then ask when this map can be inverted, at least locally, and turn to methods that can do this in practice.
 
 The first class of methods we look at is the iterative methods, whose success depends on where they start. The second class is NNs, which learn an approximate inverse directly. We begin with the physical system itself.
-
+\newpage
 \section{The Anser EMT System}
 The Anser EMT system has two main components: a planar field generator, and a tracking sensor coil. This section describes each in turn.
 
@@ -43,11 +43,11 @@ Eight of these coils are positioned on the PCB, as seen in Figure \ref{fig:field
 \begin{figure}
   \centering
   \includegraphics[width = 0.8 \textwidth]{figs/field_coils.png}
-  \caption{Diagram of 8 emitter coils arranged as on PCB}
+  \caption{Diagram of 8 emitter coils arranged as on PCB.}
   \label{fig:field_coils}
 \end{figure}
 \subsection{The Tracking Sensor Coil}
-The tracking sensor records a measurement related to the flux, and due to the emitter coils running at different frequencies, is able to recover the 8 measurements due to each of the emitter coils after demodulation. These 8 measurements are fed into the pose solving algorithm to determine the position and orientation of the sensor.
+The tracking sensor records a measurement related to the flux, and due to the emitter coils running at different frequencies, is able to recover the eight measurements due to each of the emitter coils after demodulation. These eight measurements are fed into the pose solving algorithm to determine the position and orientation of the sensor.
 
 \section{Magnetic Field Derivation}
 Each spiral coil is composed of a sequence of straight line filaments and Maxwell's equations in free space are linear \cite[p.~59]{griffiths2013} so the total magnetic field will be the sum of the fields of each individual straight line filament. Our main goal then, is to find the magnetic field generated at an observer point $p$ due to the current flowing along one of these straight line filaments, $\mathbf{a}$.  
@@ -59,7 +59,7 @@ We start by defining vectors $\mathbf{a}$, $\mathbf{b}$, and $\mathbf{c}$.
   \item $\mathbf{c}$ points from the start of the filament to the observer.
 \end{itemize}
 
-Note that throughout we use the convention $\left \vert \mathbf{a} \right \vert = a$.
+*Note that throughout we use the convention $\left \vert \mathbf{a} \right \vert = a$.
 
 Now, we use the Biot Savart Law to find the magnetic field in each of the lines. 
 
@@ -168,7 +168,7 @@ Substituting into our formula for $\mathbf{B}$ now gives:
   \mathbf{B} = \frac{\mu_0 I}{4\pi} \frac{\mathbf{a}\times \mathbf{c}}{ac^2 - \frac{\left(\mathbf{a} \cdot \mathbf{c}\right)^2}{a}} \left( \frac{1 - \frac{\mathbf{a}\cdot{\mathbf{c}}}{a^2}}{\frac{b}{a}} + \frac{\mathbf{a} \cdot \mathbf{c}}{ac} \right)
 \end{equation*}
 
-Multiplying the numerator and denominator across by $a$
+Multiplying the numerator and denominator across by $a$:
 
 \begin{equation*}
 \mathbf{B} = \frac{\mu_0 I}{4\pi} \frac{\mathbf{a}\times \mathbf{c}}{a^2c^2 - \left(\mathbf{a} \cdot \mathbf{c}\right)^2} \left( \frac{a^2 - \mathbf{a}\cdot\mathbf{c}}{b} + \frac{\mathbf{a} \cdot \mathbf{c}}{c} \right)
@@ -199,7 +199,7 @@ Now, remembering that this equation is linear and that each coil is made up of s
 Now, since we are in free space we use the identity $\mathbf{H} = \frac{\mathbf{B}}{\mu_0}$ \cite[p.~285]{griffiths2013}
 
 \section{Understanding the forward map}\label{sec:forward-map}
-The problem is framed as an inverse problem. The forward map takes position and orientation data and calculates 8 measurements from each of the coils. Our goal is to approximate an inverse to this map. To do so, we first try to understand the forward map. 
+The problem is framed as an inverse problem. The forward map takes position and orientation data and calculates eight measurements from each of the coils. Our goal is to approximate an inverse to this map. To do this, we first try to understand the forward map. 
 \subsection{Definition and properties}
 First we define a pose vector $\mathbf{p} \in \mathbb{R}^5$ 
 \begin{equation}
@@ -226,7 +226,7 @@ Then we define a vector of measurements, $\mathbf{m} \in \mathbb{R}^8$
   \end{bmatrix}
 \end{equation}
 
-Now we can write the forward map: $\mathbf{F}(\mathbf{p}): \Omega \subset \mathbb{R}^5 \rightarrow \mathbb{R}^8$. More precisely,
+Now we can write the forward map: $\mathbf{F}(\mathbf{p}): \Omega \subset \mathbb{R}^5 \rightarrow \mathbb{R}^8$. More precisely:
 \begin{equation}
   m_i = \mathbf{H}_i(x,y,z) \cdot \hat{n}(\theta,\phi) 
   \label{eq:forward}
@@ -333,7 +333,7 @@ Now that we know the theoretically "best" step to take, we iterate and do this r
 
 This method has a known failure mode: it has no step-size control. Far from the solution, where the linearisation is poor, the full step can increase the cost and the iteration can diverge.
 \subsection{Gradient Methods}
-Gauss-Newton fails when it "trusts" the linear model too far from the point at which it was linearised. The opposite approach makes no model of the residual at all. It just moves in the direction that decreases the cost the fastest. Consider the cost function \eqref{eq:cost_function} and take its gradient.
+GN fails when it "trusts" the linear model too far from the point at which it was linearised. The opposite approach makes no model of the residual at all. It just moves in the direction that decreases the cost the fastest. Consider the cost function \eqref{eq:cost_function} and take its gradient.
 \begin{equation}
   \nabla_x C(x) = \nabla_x \frac{1}{2} r(x)^\top r(x)
 \end{equation}
@@ -351,10 +351,10 @@ Gradient descent then steps against this gradient, with the step-size being deno
 \begin{equation}
   x_{i + 1} = x_i - \eta J(x_i)^\top r(x_i) 
 \end{equation}
-Because $-\nabla_x C$ is in the direction of steepest local decrease, a sufficiently small $\eta$ is guaranteed to reduce the cost, so the method is robust far from the solution where Gauss-Newton diverges. Its failure mode is also the opposite of Gauss-Newton's. Near the solution, the gradient becomes small, and since the algorithm has no knowledge of the distance to the solution it bounces back and forth around the minimum.
+Because $-\nabla_x C$ is in the direction of steepest local decrease, a sufficiently small $\eta$ is guaranteed to reduce the cost, so the method is robust far from the solution where GN diverges. Its failure mode is also the opposite of GN's. Near the solution, the gradient becomes small, and since the algorithm has no knowledge of the distance to the solution it bounces back and forth around the minimum.
 
 \subsection{Levenberg's Contribution}\label{sec:background-lm}
-In 1944, Levenberg \cite{levenberg1944} interpolated between these two algorithms. If we denote each step as $\delta_{GN}$ and $\delta_{GD}$, for Gauss-Newton and gradient descent, respectively we get that each of these steps solves the equations:
+In 1944, Levenberg \cite{levenberg1944} interpolated between these two algorithms. If we denote each step as $\delta_{GN}$ and $\delta_{GD}$, for GN and gradient descent, respectively we get that each of these steps solves the equations:
 \begin{align}
   (J^\top J) \delta_{GN} &= - J^\top r \\
   \delta_{GD} &= -\eta J^\top r
@@ -376,7 +376,7 @@ One downfall of Levenberg's approach is that $\lambda$ is the same in every dime
 This means that the algorithm works with different damping in each direction, proportional to the "scale" of that particular direction.
 
 \subsection{Convergence and the Role of Initialisation}
-Both Gauss-Newton and LM are local methods: they converge to a stationary point of $C$, and which stationary point depends on where they start. Since $C$ is typically non-convex it can have multiple local minima, an example is shown in Figure \ref{fig:local_minima}. In our problem, in particular, given the high levels of symmetry between the coils, it is highly likely that there are multiple minima. These iterative methods work when the initial guess is in the correct basin of attraction. That then raises the question, how do we get into the right basin of attraction?
+Both GN and LM are local methods: they converge to a stationary point of $C$, and which stationary point depends on where they start. Since $C$ is typically non-convex it can have multiple local minima, an example is shown in Figure \ref{fig:local_minima}. In our problem, in particular, given the high levels of symmetry between the coils, it is highly likely that there are multiple minima. These iterative methods work when the initial guess is in the correct basin of attraction. That then raises the question, how do we get into the right basin of attraction?
 \begin{figure}
   \centering
   \includegraphics[width=0.8\textwidth]{figs/local_minima.png}
@@ -391,8 +391,9 @@ We use a fully-connected feed forward NN to approximate the inverse. Suppose we 
 
 \begin{align}
   \label{eq:FFNN}
-  o_{i+1} &= \sigma \left(W_io_i + b_i\right) \text{,} i \in \{0,1,2,...l-2\} \\ 
-  o_{L} &= W_{L-1}o_{l+1} + b_{l-1}
+  o_{i+1} &= \sigma \left(W_i o_i + b_i\right),
+    \qquad i \in \{0, 1, \dots, L-1\}, \\
+  \hat{y} &= W_L o_L + b_L,
 \end{align}
 where $W_i$ and $b_i$ are the weight matrices and bias vectors (collectively the parameters $w$), and $\sigma$ is the nonlinear activation function.
 We represent this approximation as $\hat{F}^{-1}_w: \mathbb{R}^M \rightarrow \mathbb{R}^N$, with $\hat{y} = \hat{F}^{-1}_w(x)$ 
@@ -400,5 +401,5 @@ We represent this approximation as $\hat{F}^{-1}_w: \mathbb{R}^M \rightarrow \ma
 The question then becomes how do we find the collection of parameters, $w$, which does this?
 
 \subsection{Training a Neural Network}
-Because we possess $F$ we can generate unlimited training data, a collection of labelled pairs, $(x_i,y_i)$. The goal of training is then to minimise the \emph{loss function} with respect to the parameters, $w$. The loss function is a performance metric for the network, and we will see in Section \ref{sec:res-network} that the choice of loss function is crucial to make a network perform well.
+Because we possess $F$ we can generate unlimited training data, a collection of labelled pairs, $(x_i,y_i)$. The goal of training is then to minimise the \emph{loss function} with respect to the parameters $w$. The loss function is a performance metric for the network, and we will see in Section \ref{sec:res-network} that the choice of loss function is crucial to make a network perform well.
 We minimise the loss using an optimiser, in our case the Adam optimiser \cite{kingma2017}. Generalisation is then assessed on a held-out test set never seen during training.
