@@ -4,7 +4,9 @@
 
 This thesis asked how an LM pose solver can be reliably initialised when no previous pose exists. To answer this question, we reimplemented the Anser forward model in Python, characterised the solver's convergence as a function of initialisation quality, trained an NN to predict pose directly, and combined the two into a hybrid solver. 
 
-The basin sweeps showed that convergence degrades as the initialisation error increases, and that failure is discrete. The LM solver either converges or fails outright. The network alone is reliable but imprecise. Its errors are unimodal and never reach the desired convergence tolerances. The two solvers are therefore complementary. The hybrid solver derived by combining the two retains the precision of the LM solver, but allows the NN initialisation to provide increased reliability. 
+The basin sweeps showed that convergence degrades as the initialisation error increases, and that failure is discrete. The LM solver either converges or fails outright, and on a cold start it fails on $14\%$ of test poses. The network alone is reliable but imprecise. Its errors are unimodal and almost never reach the desired convergence tolerances. The two solvers are therefore complementary. The hybrid solver derived by combining the two retains the precision of the LM solver, but allows the NN initialisation to provide increased reliability. On the held-out test set, the hybrid raises the convergence rate from $0.859$ to $0.947$, reduces the 95th percentile positional error from $64.2$mm to $1.67$mm, and runs $2.8$ times faster than a cold start LM solver.
+
+
 
 \section{Limitations and Future Work}
 
@@ -12,4 +14,4 @@ The most significant limitation is that all results are purely simulated. This t
 
 A single, basic NN architecture was used. There was no capacity study. Future work could include testing more complex models, seeing how much training data is needed, and varying model capacity to tune for accuracy and computation time in inference.
 
-This thesis uses a finite-difference Jacobian. However, if the forward map were reimplemented in PyTorch, we could have used autograd to obtain an analytic Jacobian. This would remove the step-size parameter $h$, and its associated truncation error
+This thesis uses a finite-difference Jacobian. However, if the forward map were reimplemented in PyTorch, we could have used autograd to obtain an analytic Jacobian. This would remove the step-size parameter $h$, and its associated truncation error.
