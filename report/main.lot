@@ -11,11 +11,12 @@
 \addvspace {10\p@ }
 \contentsline {table}{\numberline {4.1}{\ignorespaces Computer specifications for training and inference}}{38}{table.caption.32}%
 \contentsline {table}{\numberline {4.2}{\ignorespaces Convergence criteria for results reporting.}}{38}{table.caption.33}%
-\contentsline {table}{\numberline {4.3}{\ignorespaces Experimental Design of NN models.}}{41}{table.caption.40}%
-\contentsline {table}{\numberline {4.4}{\ignorespaces Test set performance of NN models.}}{41}{table.caption.41}%
-\contentsline {table}{\numberline {4.5}{\ignorespaces Performance of the three solvers on the held-out test set of 20{,}000 poses.}}{43}{table.caption.47}%
-\contentsline {table}{\numberline {4.6}{\ignorespaces Basin sweep vs. observed Hybrid convergence rates.}}{46}{table.caption.50}%
-\contentsline {table}{\numberline {4.7}{\ignorespaces Basin sweep vs. cold start LM convergence rates.}}{46}{table.caption.51}%
+\contentsline {table}{\numberline {4.3}{\ignorespaces Positional basin sweep at selected perturbation distances $d$.}}{40}{table.caption.37}%
+\contentsline {table}{\numberline {4.4}{\ignorespaces Experimental Design of NN models.}}{41}{table.caption.39}%
+\contentsline {table}{\numberline {4.5}{\ignorespaces Test set performance of NN models.}}{42}{table.caption.40}%
+\contentsline {table}{\numberline {4.6}{\ignorespaces Performance of the three solvers on the held-out test set of 20{,}000 poses.}}{44}{table.caption.46}%
+\contentsline {table}{\numberline {4.7}{\ignorespaces Basin sweep vs. observed Hybrid convergence rates.}}{46}{table.caption.49}%
+\contentsline {table}{\numberline {4.8}{\ignorespaces Basin sweep vs. cold start LM convergence rates.}}{47}{table.caption.50}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {A.1}{\ignorespaces Mapping between thesis sections and Python modules.}}{52}{table.caption.53}%
+\contentsline {table}{\numberline {A.1}{\ignorespaces Mapping between thesis sections and Python modules.}}{53}{table.caption.52}%

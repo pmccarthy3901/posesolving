@@ -64,7 +64,7 @@ If we want to perturb an orientation vector $\hat{n} = (n_1,n_2,n_3)$ by an angl
 
 For each of the sweeps, the convergence rate is calculated as in Section \ref{sec:conv_criteria}.
 
-\paragraph{Positional Sweep -} The position is swept from $d = 0$ to $d = 150$mm. Figure \ref{fig:pos_sweep} shows that as the perturbation magnitude increases, there is a steady decrease in the convergence rate, with no sharp dropoff. This suggests that there are no sharp boundaries contrary to what one might expect of a Newton-type method. 
+The position is swept from $d = 0$ to $d = 150$mm. Figure \ref{fig:pos_sweep} shows that as the perturbation magnitude increases, there is a steady decrease in the convergence rate, with no sharp dropoff. This suggests that there are no sharp boundaries contrary to what one might expect of a Newton-type method. Table \ref{tab:basin_sweep} reports the error statistics at selected perturbation distances.
 \begin{figure}
   \centering 
   \includegraphics[width = 0.8 \textwidth]{figs/pos_sweep.png}
@@ -72,7 +72,7 @@ For each of the sweeps, the convergence rate is calculated as in Section \ref{se
   \label{fig:pos_sweep}
 \end{figure}
 
-\paragraph{Angular Sweep -} The angle is swept from $\alpha = 0$ to $\alpha = 90^{\circ}$. Figure \ref{fig:angle_sweep} shows the same story as the positional sweep, steady decrease with no sharp dropoff. We do note that the angle is a lot more forgiving than position, retaining a 97.5\% convergence rate up to $\alpha = 42.6^\circ$. This is because the equation \eqref{eq:forward} depends on $1/r^{3}$ whereas the orientation angle only enters through the dot product.
+The angle is swept from $\alpha = 0$ to $\alpha = 90^{\circ}$. Figure \ref{fig:angle_sweep} shows the same story as the positional sweep, steady decrease with no sharp dropoff. We do note that the angle is a lot more forgiving than position, retaining a 97.5\% convergence rate up to $\alpha = 42.6^\circ$. This is because the equation \eqref{eq:forward} depends on $1/r^{3}$ whereas the orientation angle only enters through the dot product.
 
 \begin{figure}
   \centering
@@ -81,7 +81,23 @@ For each of the sweeps, the convergence rate is calculated as in Section \ref{se
   \label{fig:angle_sweep}
 \end{figure}
 
-What is interesting in both the positional and angular sweeps is that the failure is discrete. Either the solver converges to machine precision $\sim 10^{-14} \mathrm{mm/}^\circ$ or else it is off by a large number. This is seen when comparing the mean, median, and 95\% error. For example, in the positional perturbation with $d = 86.8$ mm we get a mean positional error of 8.13mm but a median positional error of $1.8*10^{-11}$mm, suggesting that a few outliers inflate the mean. This is further confirmed by the 95\% error of 56.3mm, showing that either the solver works or it does not, there is no slow dropoff in error. This is also shown in Figure \ref{fig:pos_sweep_errors}.
+\begin{table}
+  \centering
+  \begin{tabular}{lllll}
+    \toprule
+    $d$ (mm) & Conv.\ rate & Mean $e_p$ (mm) & Median $e_p$ (mm) & 95th pct.\ $e_p$ (mm) \\
+    \midrule
+    $7.9$   & $0.975$ & $0.083$ & $1.5\times10^{-11}$  & $1.0\times10^{-9}$ \\
+    $47.4$  & $0.92$  & $2.14$  & $9.5\times10^{-12}$  & $14.3$ \\
+    $86.8$  & $0.865$ & $8.13$  & $1.9\times10^{-11}$  & $56.3$ \\
+    $118.4$ & $0.84$  & $14.4$  & $4.0\times10^{-11}$  & $118$ \\
+    $150.0$ & $0.76$  & $27.7$  & $7.8\times10^{-11}$  & $150$ \\
+    \bottomrule
+  \end{tabular}
+  \caption{Positional basin sweep at selected perturbation distances $d$.}
+  \label{tab:basin_sweep}
+\end{table}
+What is interesting in both the positional and angular sweeps is that the failure is discrete. Either the solver converges to machine precision or else it is off by a large number. This is seen when comparing the mean, median, and 95th percentile error. For example, for the larger values of $d$ in Table \ref{tab:basin_sweep} we get a mean positional error orders of magnitude higher than the median positional error, suggesting that a few outliers inflate the mean. This is further confirmed by the 95th percentile positional error being on the same order as $d$, showing that the solver either works or it does not, there is no slow dropoff in error. This behaviour can also be seen in Figure \ref{fig:pos_sweep_errors}.
 
 
 \begin{figure}
@@ -113,7 +129,7 @@ In training the network, a number of tuning choices were made against the valida
   \centering
   \begin{tabular}{lll}
     \toprule
-    Name & Mean Pos Error (mm) & Mean Angular Error (deg)  \\
+    Name & Mean $e_p$ (mm) & Mean $e_{\hat{n}}$ (deg)  \\
     \midrule
     Random Pair & 165 & 90 \\
     Centre Predictor & 120 & 90 \\
@@ -228,7 +244,7 @@ We test the first explanation by constructing a hypothesis test. We test the nul
     Quantity & Symbol & Value \\
     \midrule 
     LM mean distance to test pose & $\bar{d}_\mathrm{LM}$ & $\approx 120$mm \\
-    Closest basin sweep perturbation to LM mean & $d_\mathrm{BS}$ & $118$mm \\
+    Closest basin sweep perturbation to LM mean & $d_\mathrm{BS}$ & $118.4$mm \\
     LM Cold start convergence rate & $r_\mathrm{LM}$ & $0.859$ \\
     Equivalent basin sweep convergence rate & $r_\mathrm{BS}$ & $0.84$ \\
     \bottomrule 
